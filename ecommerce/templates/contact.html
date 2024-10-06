@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Contact Us{% endblock title %}
+
+{% block body %}
+<h1 class="text-center">Contact Us</h1>
+<div class="container mt-2">
+
+    {% for message in messages %}
+    <div id="notification" class="notification">
+        {% for message in messages %}
+            <div>{{ message }}</div>
+        {% endfor %}
+    </div>
+    <script>
+        setTimeout(function() {
+            document.getElementById('notification').style.display = 'none';
+        }, 3000); // Hide after 3 seconds
+    </script>
+    <style>
+        .notification {
+            background-color: #146714; /* Customize the background */
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            /* Add more styles as needed */
+        }
+    </style>
+    {% endfor %}
+
+    <div class="row">
+        <div class="col-md-4"></div>
+
+        <div class="col-md-4">
+            <form method="post" action="{% url 'contact' %}">{% csrf_token %}
+                <div class="form-group">
+                    <input type="text" class="form-control" id="name" name="name" placeholder="Enter Your Name" required>
+                </div>
+                <br>
+                <div class="form-group">
+                    <input type="email" class="form-control" id="email" name="email" placeholder="Enter Your Email" value="{{ user.email }}" required>
+                </div>
+                <br>
+                <div class="form-group">
+                    <input type="tel" class="form-control" id="phone" name="phone" placeholder="Enter Your Phone Number">
+                </div>
+                <br>
+                <div class="form-group">
+                    <textarea class="form-control" id="message" name="message" rows="3" placeholder="Enter Your Message" required></textarea>
+                </div>
+                <br>
+                <button type="submit" class="btn btn-dark">Submit</button>
+                <br><br><br>
+            </form>
+        </div>
+
+        <div class="col-md-4"></div>
+    </div>
+
+</div>
+{% endblock body %}

@@ -1,0 +1,4 @@
+PAYPAL_CLIENT_ID ="Ac5kLYBZp7bqHG_26uyk-NWPwSDrFTpmncq-hkl5tzoZkpt7oRb1k-WYTHMfrgooij2SChtRxLbFtpkD"
+PAYPAL_CLIENT_SECRET ="EINvZ4edoaEYeF03Y98gN6SHThuOwvkWDYM0UQRrCFXFCXE3IYRpNOQqzpJnpduuR8W0yK6kKAN_chQS"
+MID ="sb-qczon33089171@business.example.com"
+MK ="b{^9U-Ux"

@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Payment Status
+{% endblock title %}
+
+{% block body %}
+<section id="payment-status" class="payment-status">
+    <div class="container">
+        <div class="section-title text-center">
+            <h2>Payment Status</h2>
+        </div>
+
+        <!-- Payment Success -->
+        {% if success %}
+            <div class="alert alert-success text-center">
+                <h3>Thank you! Your payment was successful.</h3>
+                <p>Your order has been placed and will be processed shortly. You will receive a confirmation email soon.</p>
+                
+                <!-- Order Summary (Optional) -->
+                <div class="order-summary mt-4">
+                    <h4>Order Summary</h4>
+                    <ul class="list-group">
+                        {% for item in order.items %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            {{ item.name }}
+                            <span class="badge badge-primary badge-pill">{{ item.quantity }}</span>
+                        </li>
+                        {% endfor %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <strong>Total Amount:</strong>
+                            <span><b>Rs. {{ order.total }}</b></span>
+                        </li>
+                    </ul>
+                </div>
+
+                <a href="/" class="btn btn-primary mt-4">Go to Homepage</a>
+                <a href="/orders/{{ order.id }}" class="btn btn-secondary mt-4">View Order Details</a>
+            </div>
+
+        <!-- Payment Failure -->
+        {% else %}
+            <div class="alert alert-danger text-center">
+                <h3>Oops! Your payment could not be completed.</h3>
+                <p>There was an issue processing your payment. Please try again or contact support if the issue persists.</p>
+
+                <!-- Retry Button -->
+                <a href="/checkout/" class="btn btn-danger mt-4">Try Again</a>
+
+                <!-- Contact Support -->
+                <p class="mt-3">Need help? <a href="/contact/">Contact Support</a></p>
+            </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Optional: Include some payment-related JavaScript here if needed -->
+
+{% endblock body %}

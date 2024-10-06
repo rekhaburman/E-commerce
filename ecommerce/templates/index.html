@@ -1,0 +1,199 @@
+{% extends 'base.html' %}
+{% block title %}
+Luxycart
+{% endblock title %}
+
+{% block content %}
+<h3>Welcome To LuxyCart</h3>
+{% endblock content %}
+
+{% block body %}
+{% load static %}
+<body>
+<head>
+    <title>Home</title>
+    <link rel="icon" href="./favicon.ico" type="image/l.png">
+</head>
+</body>
+
+<section id="collections" class="collections section">
+
+  <div class="container section-title" data-aos="fade-up">
+    <h2>Welcome To LuxyCart</h2>
+    <p><span>Check Our</span> <span class="description-title">Collections</span></p>
+    <p class="sale-announcement"><strong>Don't Miss Our Amazing Sale: Up to 50% Off on Selected Items!</strong></p>
+  </div>
+
+  {% for product, range, nSlides in allProds %}
+    <h3>{{ product.0.category }} Flashsale</h3>
+    <div class="container">
+        <div class="row">
+
+          {% for i in product %}
+          <div class="col-md-3 mt-3">
+              <img src='/media/{{i.image}}' class="card-img-top" alt="Image not found" height="200px" width="150px" />
+              <div class="card-body">
+                  <h5 class="card-title mt-2" id="namepr{{ i.id }}">{{ i.product_name }}</h5> <!-- Corrected id -->
+                  <p class="card-text">{{ i.desc|slice:"0:53" }}...</p>
+                  <h6 class="card-title">Price:<span id="pricepr{{i.id}}">{{i.price}}</span></h6> <!-- Use i.id consistently -->
+                  <span id="divpr{{i.id}}" class="divpr">
+                      <button id="pr{{i.id}}" class="btn btn-success cart btn-sm mt-0">Add to Cart</button> <!-- Use i.id consistently -->
+                  </span>
+                  <a href="/media/{{i.image}}">
+                      <button class="btn btn-success btn-sm">View</button>
+                  </a>
+              </div>
+          </div>
+      {% endfor %}
+        
+      </div>
+    </div>
+  {% endfor %}
+
+</section>
+{% block script %}
+<script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+
+<script>
+  
+  
+  //find pout the card from local storage
+  if (localStorage.getItem('cart') == null) {
+    var cart = {};
+} else {
+    cart = JSON.parse(localStorage.getItem('cart'));
+    updateCart(cart, "");  // Update the cart UI if there is an existing cart in localStorage
+}
+
+// Add product to the cart when "Add to Cart" button is clicked
+$('.divpr').on('click', 'button.cart', function() {
+    console.log("click")
+    var idstr = this.id;  // This will be something like 'pr1', 'pr2', etc.
+    var id = idstr.replace('pr', '');  // Extract numeric product ID
+
+    // Check if the product is already in the cart
+    if (cart[idstr] != undefined) {
+    cart[idstr][0] += 1;  // Increment quantity if product is already in the cart
+} else {
+    var name = document.getElementById('namepr' + id).innerHTML;
+    var price = document.getElementById('pricepr' + id).innerHTML;
+    cart[idstr] = [1, name, price];  // Add new product
+}
+
+    // Update the cart in the UI and localStorage
+    updateCart(cart, id);
+    localStorage.setItem('cart', JSON.stringify(cart));
+});
+
+function updateCart(cart,id) {
+    let totalItems = 0;
+    let innerHTML = '';
+
+        let productDiv = document.getElementById('divpr' + id);
+        console.log({cart})
+        for (let item in cart) {
+            totalItems += cart[item][0];  // Update total quantity
+            
+            let id = item.replace('pr', '');  // Extract product ID from cart key
+            // Get product div
+
+            // If the product div exists, update it
+            if (productDiv) {
+                innerHTML = innerHTML + `
+                    <button id="minus${id}" class="btn btn-success minus">-</button> 
+                    <span id="valpr${id}">${cart[item][0]}</span> 
+                    <button id="plus${id}" class="btn btn-success plus">+</button>`;
+            }
+        }
+ 
+            productDiv.innerHTML = innerHTML
+        
+
+    
+   
+
+    // Update the total items count in the cart
+    document.getElementById('cart').innerHTML = totalItems;
+    
+    // Update the popover with cart details
+    updatePopover(cart);
+}
+
+
+
+function updatePopover(cart) {
+    var popStr = "<h5>Your Shopping Cart</h5><div class='mx-2 my-2'>";
+    var i = 1;
+
+    for (var item in cart) {
+        popStr += `<b>${i}</b>. ${cart[item][1]} - Qty: <b>${cart[item][0]}</b><br>`;  // Display product name and quantity
+        i++;
+    }
+
+    popStr += `</div><a href='/checkout'><button class='btn btn-success'>Checkout</button></a>
+               <button class='btn btn-dark' onclick='clearCart()'>Clear Cart0</button>`;
+    $('#popcart').popover('dispose');
+    // Update the popover content
+    $('#popcart').attr('data-content', popStr).popover('show');
+}
+
+
+// Clear cart function to remove all items from the cart
+function clearCart() {
+    localStorage.clear();  // Clear localStorage
+    cart = {};  // Reset the cart object
+    updateCart(cart, "");  // Update the UI and localStorage
+}
+
+// Handle the minus button click
+$('.divpr').on('click', 'button.minus', function() {
+    console.log("click")
+    var id = this.id.slice(7);  // Extract the numeric ID part (e.g., from 'minus1', 'minus2')
+    var itemId = 'pr' + id;  // Match the item ID with the cart key (e.g., 'pr1')
+
+    // If the product exists in the cart
+    if (cart[itemId] != undefined) {
+        cart[itemId][0] = Math.max(0, cart[itemId][0] - 1);  // Decrease the quantity but not below 0
+
+        // If the quantity reaches 0, optionally remove the product
+        if (cart[itemId][0] === 0) {
+            delete cart[itemId];
+        }
+
+        // Update the quantity in the UI
+        if (document.getElementById('valpr' + id)) {
+            document.getElementById('valpr' + id).innerHTML = cart[itemId] ? cart[itemId][0] : 0;
+        }
+    }
+
+    updateCart(cart, id);  // Update the cart UI and localStorage
+});
+
+// Handle the plus button click
+$('.divpr').on('click', 'button.plus', function() {
+    console.log("click")
+    var id = this.id.slice(6);  // Extract the numeric ID part (e.g., from 'plus1', 'plus2')
+    var itemId = 'pr' + id;  // Match the item ID with the cart key (e.g., 'pr1')
+    
+    // If the product exists in the cart, increment the quantity
+    if (cart[itemId] != undefined) {
+        cart[itemId][0] += 1;
+
+        // Update the quantity in the UI
+        if (document.getElementById('valpr' + id)) {
+            document.getElementById('valpr' + id).innerHTML = cart[itemId][0];
+        }
+    }
+
+    updateCart(cart, id);  // Update the cart UI and localStorage
+});
+
+
+
+</script>
+
+  {% endblock script %}
+
+{% endblock body %} 
